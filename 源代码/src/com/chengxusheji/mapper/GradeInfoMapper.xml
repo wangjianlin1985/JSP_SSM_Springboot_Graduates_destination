@@ -1,0 +1,48 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.GradeInfoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加年级记录 -->
+	<insert id="addGradeInfo" parameterType="gradeInfo">
+		insert into t_gradeInfo(gradeName) values 
+		(#{gradeName})
+	</insert>
+
+	<!-- 按照查询条件分页查询年级记录 -->
+	<select id="queryGradeInfo" resultMap="gradeInfoMap" >
+		select t_gradeInfo.* from t_gradeInfo ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="gradeInfoMap" type="gradeInfo">
+        <id property="gradeId" column="gradeId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有年级记录 -->
+	<select id="queryGradeInfoList" resultMap="gradeInfoMap" >
+		select t_gradeInfo.* from t_gradeInfo ${where}
+	</select>
+
+    <!-- 按照查询条件的年级记录数 -->
+	<select id="queryGradeInfoCount" resultType="int">
+		select count(*) from t_gradeInfo ${where}
+	</select>
+
+	<!-- 根据主键查询某个年级记录 -->
+	<select id="getGradeInfo" parameterType="int" resultMap="gradeInfoMap">
+		select * from t_gradeInfo where t_gradeInfo.gradeId = #{gradeId}
+	</select>
+
+	<!-- 更新年级记录 -->
+	<update id="updateGradeInfo" parameterType="gradeInfo">
+		update t_gradeInfo set gradeName=#{gradeName} where gradeId = #{gradeId}
+	</update>
+
+	<!-- 删除年级记录 -->
+	<delete id="deleteGradeInfo" parameterType="int">
+		delete from t_gradeInfo where gradeId=#{gradeId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.EntrepreneurStudentMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加创业学生记录 -->
+	<insert id="addEntrepreneurStudent" parameterType="entrepreneurStudent">
+		insert into t_entrepreneurStudent(studentNumber,studentName,specialObj,gradeObj,yearMonth,areaInfo,entreName,companyType,personNumber) values 
+		(#{studentNumber},#{studentName},#{specialObj.specialNo},#{gradeObj.gradeId},#{yearMonth},#{areaInfo},#{entreName},#{companyType},#{personNumber})
+	</insert>
+
+	<!-- 按照查询条件分页查询创业学生记录 -->
+	<select id="queryEntrepreneurStudent" resultMap="entrepreneurStudentMap" >
+		select t_entrepreneurStudent.* from t_entrepreneurStudent,t_gradeInfo,t_specialInfo ${where} and t_entrepreneurStudent.specialObj = t_specialInfo.specialNo and t_entrepreneurStudent.gradeObj = t_gradeInfo.gradeId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="entrepreneurStudentMap" type="entrepreneurStudent">
+        <id property="id" column="id" />
+        <association property="specialObj" column="specialObj" select="com.chengxusheji.mapper.SpecialInfoMapper.getSpecialInfo" />
+        <association property="gradeObj" column="gradeObj" select="com.chengxusheji.mapper.GradeInfoMapper.getGradeInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有创业学生记录 -->
+	<select id="queryEntrepreneurStudentList" resultMap="entrepreneurStudentMap" >
+		select t_entrepreneurStudent.* from t_entrepreneurStudent,t_gradeInfo,t_specialInfo ${where} and t_entrepreneurStudent.specialObj = t_specialInfo.specialNo and t_entrepreneurStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+    <!-- 按照查询条件的创业学生记录数 -->
+	<select id="queryEntrepreneurStudentCount" resultType="int">
+		select count(*) from t_entrepreneurStudent,t_gradeInfo,t_specialInfo ${where} and t_entrepreneurStudent.specialObj = t_specialInfo.specialNo and t_entrepreneurStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+	<!-- 根据主键查询某个创业学生记录 -->
+	<select id="getEntrepreneurStudent" parameterType="int" resultMap="entrepreneurStudentMap">
+		select * from t_entrepreneurStudent where t_entrepreneurStudent.id = #{id}
+	</select>
+
+	<!-- 更新创业学生记录 -->
+	<update id="updateEntrepreneurStudent" parameterType="entrepreneurStudent">
+		update t_entrepreneurStudent set studentNumber=#{studentNumber},studentName=#{studentName},specialObj=#{specialObj.specialNo},gradeObj=#{gradeObj.gradeId},yearMonth=#{yearMonth},areaInfo=#{areaInfo},entreName=#{entreName},companyType=#{companyType},personNumber=#{personNumber} where id = #{id}
+	</update>
+
+	<!-- 删除创业学生记录 -->
+	<delete id="deleteEntrepreneurStudent" parameterType="int">
+		delete from t_entrepreneurStudent where id=#{id}
+	</delete>
+
+</mapper>

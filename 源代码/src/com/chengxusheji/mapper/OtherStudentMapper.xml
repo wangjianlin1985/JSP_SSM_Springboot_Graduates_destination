@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.OtherStudentMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加其他学生记录 -->
+	<insert id="addOtherStudent" parameterType="otherStudent">
+		insert into t_otherStudent(studentNumber,studentName,specialObj,gradeObj,yearMonth,memo) values 
+		(#{studentNumber},#{studentName},#{specialObj.specialNo},#{gradeObj.gradeId},#{yearMonth},#{memo})
+	</insert>
+
+	<!-- 按照查询条件分页查询其他学生记录 -->
+	<select id="queryOtherStudent" resultMap="otherStudentMap" >
+		select t_otherStudent.* from t_otherStudent,t_gradeInfo,t_specialInfo ${where} and t_otherStudent.specialObj = t_specialInfo.specialNo and t_otherStudent.gradeObj = t_gradeInfo.gradeId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="otherStudentMap" type="otherStudent">
+        <id property="id" column="id" />
+        <association property="specialObj" column="specialObj" select="com.chengxusheji.mapper.SpecialInfoMapper.getSpecialInfo" />
+        <association property="gradeObj" column="gradeObj" select="com.chengxusheji.mapper.GradeInfoMapper.getGradeInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有其他学生记录 -->
+	<select id="queryOtherStudentList" resultMap="otherStudentMap" >
+		select t_otherStudent.* from t_otherStudent,t_gradeInfo,t_specialInfo ${where} and t_otherStudent.specialObj = t_specialInfo.specialNo and t_otherStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+    <!-- 按照查询条件的其他学生记录数 -->
+	<select id="queryOtherStudentCount" resultType="int">
+		select count(*) from t_otherStudent,t_gradeInfo,t_specialInfo ${where} and t_otherStudent.specialObj = t_specialInfo.specialNo and t_otherStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+	<!-- 根据主键查询某个其他学生记录 -->
+	<select id="getOtherStudent" parameterType="int" resultMap="otherStudentMap">
+		select * from t_otherStudent where t_otherStudent.id = #{id}
+	</select>
+
+	<!-- 更新其他学生记录 -->
+	<update id="updateOtherStudent" parameterType="otherStudent">
+		update t_otherStudent set studentNumber=#{studentNumber},studentName=#{studentName},specialObj=#{specialObj.specialNo},gradeObj=#{gradeObj.gradeId},yearMonth=#{yearMonth},memo=#{memo} where id = #{id}
+	</update>
+
+	<!-- 删除其他学生记录 -->
+	<delete id="deleteOtherStudent" parameterType="int">
+		delete from t_otherStudent where id=#{id}
+	</delete>
+
+</mapper>

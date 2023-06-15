@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.GraduateStudentMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加考研学生记录 -->
+	<insert id="addGraduateStudent" parameterType="graduateStudent">
+		insert into t_graduateStudent(studentNumber,studentName,specialObj,gradeObj,yearMonth,province,schoolName,specialName) values 
+		(#{studentNumber},#{studentName},#{specialObj.specialNo},#{gradeObj.gradeId},#{yearMonth},#{province},#{schoolName},#{specialName})
+	</insert>
+
+	<!-- 按照查询条件分页查询考研学生记录 -->
+	<select id="queryGraduateStudent" resultMap="graduateStudentMap" >
+		select t_graduateStudent.* from t_graduateStudent,t_gradeInfo,t_specialInfo ${where} and t_graduateStudent.specialObj = t_specialInfo.specialNo and t_graduateStudent.gradeObj = t_gradeInfo.gradeId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="graduateStudentMap" type="graduateStudent">
+        <id property="id" column="id" />
+        <association property="specialObj" column="specialObj" select="com.chengxusheji.mapper.SpecialInfoMapper.getSpecialInfo" />
+        <association property="gradeObj" column="gradeObj" select="com.chengxusheji.mapper.GradeInfoMapper.getGradeInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有考研学生记录 -->
+	<select id="queryGraduateStudentList" resultMap="graduateStudentMap" >
+		select t_graduateStudent.* from t_graduateStudent,t_gradeInfo,t_specialInfo ${where} and t_graduateStudent.specialObj = t_specialInfo.specialNo and t_graduateStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+    <!-- 按照查询条件的考研学生记录数 -->
+	<select id="queryGraduateStudentCount" resultType="int">
+		select count(*) from t_graduateStudent,t_gradeInfo,t_specialInfo ${where} and t_graduateStudent.specialObj = t_specialInfo.specialNo and t_graduateStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+	<!-- 根据主键查询某个考研学生记录 -->
+	<select id="getGraduateStudent" parameterType="int" resultMap="graduateStudentMap">
+		select * from t_graduateStudent where t_graduateStudent.id = #{id}
+	</select>
+
+	<!-- 更新考研学生记录 -->
+	<update id="updateGraduateStudent" parameterType="graduateStudent">
+		update t_graduateStudent set studentNumber=#{studentNumber},studentName=#{studentName},specialObj=#{specialObj.specialNo},gradeObj=#{gradeObj.gradeId},yearMonth=#{yearMonth},province=#{province},schoolName=#{schoolName},specialName=#{specialName} where id = #{id}
+	</update>
+
+	<!-- 删除考研学生记录 -->
+	<delete id="deleteGraduateStudent" parameterType="int">
+		delete from t_graduateStudent where id=#{id}
+	</delete>
+
+</mapper>

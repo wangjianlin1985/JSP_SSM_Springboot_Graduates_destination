@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.UnderemployedStudentMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加未就业学生记录 -->
+	<insert id="addUnderemployedStudent" parameterType="underemployedStudent">
+		insert into t_underemployedStudent(studentNumber,studentName,specialObj,gradeObj,yearMonth,reason) values 
+		(#{studentNumber},#{studentName},#{specialObj.specialNo},#{gradeObj.gradeId},#{yearMonth},#{reason})
+	</insert>
+
+	<!-- 按照查询条件分页查询未就业学生记录 -->
+	<select id="queryUnderemployedStudent" resultMap="underemployedStudentMap" >
+		select t_underemployedStudent.* from t_underemployedStudent,t_gradeInfo,t_specialInfo ${where} and t_underemployedStudent.specialObj = t_specialInfo.specialNo and t_underemployedStudent.gradeObj = t_gradeInfo.gradeId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="underemployedStudentMap" type="underemployedStudent">
+        <id property="id" column="id" />
+        <association property="specialObj" column="specialObj" select="com.chengxusheji.mapper.SpecialInfoMapper.getSpecialInfo" />
+        <association property="gradeObj" column="gradeObj" select="com.chengxusheji.mapper.GradeInfoMapper.getGradeInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有未就业学生记录 -->
+	<select id="queryUnderemployedStudentList" resultMap="underemployedStudentMap" >
+		select t_underemployedStudent.* from t_underemployedStudent,t_gradeInfo,t_specialInfo ${where} and t_underemployedStudent.specialObj = t_specialInfo.specialNo and t_underemployedStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+    <!-- 按照查询条件的未就业学生记录数 -->
+	<select id="queryUnderemployedStudentCount" resultType="int">
+		select count(*) from t_underemployedStudent,t_gradeInfo,t_specialInfo ${where} and t_underemployedStudent.specialObj = t_specialInfo.specialNo and t_underemployedStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+	<!-- 根据主键查询某个未就业学生记录 -->
+	<select id="getUnderemployedStudent" parameterType="int" resultMap="underemployedStudentMap">
+		select * from t_underemployedStudent where t_underemployedStudent.id = #{id}
+	</select>
+
+	<!-- 更新未就业学生记录 -->
+	<update id="updateUnderemployedStudent" parameterType="underemployedStudent">
+		update t_underemployedStudent set studentNumber=#{studentNumber},studentName=#{studentName},specialObj=#{specialObj.specialNo},gradeObj=#{gradeObj.gradeId},yearMonth=#{yearMonth},reason=#{reason} where id = #{id}
+	</update>
+
+	<!-- 删除未就业学生记录 -->
+	<delete id="deleteUnderemployedStudent" parameterType="int">
+		delete from t_underemployedStudent where id=#{id}
+	</delete>
+
+</mapper>

@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ArmyStudentMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加参军学生记录 -->
+	<insert id="addArmyStudent" parameterType="armyStudent">
+		insert into t_armyStudent(studentNumber,studentName,specialObj,gradeObj,yearMonth,areaInfo,junqu,positionName,shouru) values 
+		(#{studentNumber},#{studentName},#{specialObj.specialNo},#{gradeObj.gradeId},#{yearMonth},#{areaInfo},#{junqu},#{positionName},#{shouru})
+	</insert>
+
+	<!-- 按照查询条件分页查询参军学生记录 -->
+	<select id="queryArmyStudent" resultMap="armyStudentMap" >
+		select t_armyStudent.* from t_armyStudent,t_gradeInfo,t_specialInfo ${where} and t_armyStudent.specialObj = t_specialInfo.specialNo and t_armyStudent.gradeObj = t_gradeInfo.gradeId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="armyStudentMap" type="armyStudent">
+        <id property="id" column="id" />
+        <association property="specialObj" column="specialObj" select="com.chengxusheji.mapper.SpecialInfoMapper.getSpecialInfo" />
+        <association property="gradeObj" column="gradeObj" select="com.chengxusheji.mapper.GradeInfoMapper.getGradeInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有参军学生记录 -->
+	<select id="queryArmyStudentList" resultMap="armyStudentMap" >
+		select t_armyStudent.* from t_armyStudent,t_gradeInfo,t_specialInfo ${where} and t_armyStudent.specialObj = t_specialInfo.specialNo and t_armyStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+    <!-- 按照查询条件的参军学生记录数 -->
+	<select id="queryArmyStudentCount" resultType="int">
+		select count(*) from t_armyStudent,t_gradeInfo,t_specialInfo ${where} and t_armyStudent.specialObj = t_specialInfo.specialNo and t_armyStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+	<!-- 根据主键查询某个参军学生记录 -->
+	<select id="getArmyStudent" parameterType="int" resultMap="armyStudentMap">
+		select * from t_armyStudent where t_armyStudent.id = #{id}
+	</select>
+
+	<!-- 更新参军学生记录 -->
+	<update id="updateArmyStudent" parameterType="armyStudent">
+		update t_armyStudent set studentNumber=#{studentNumber},studentName=#{studentName},specialObj=#{specialObj.specialNo},gradeObj=#{gradeObj.gradeId},yearMonth=#{yearMonth},areaInfo=#{areaInfo},junqu=#{junqu},positionName=#{positionName},shouru=#{shouru} where id = #{id}
+	</update>
+
+	<!-- 删除参军学生记录 -->
+	<delete id="deleteArmyStudent" parameterType="int">
+		delete from t_armyStudent where id=#{id}
+	</delete>
+
+</mapper>

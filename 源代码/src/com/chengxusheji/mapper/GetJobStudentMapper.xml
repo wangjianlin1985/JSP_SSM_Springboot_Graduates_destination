@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.GetJobStudentMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加就业学生记录 -->
+	<insert id="addGetJobStudent" parameterType="getJobStudent">
+		insert into t_getJobStudent(studentNumber,name,specialObj,gradeObj,yearMonth,areaInfo,companyName,hangye,positionName,companyType,conectInfo,shouru) values 
+		(#{studentNumber},#{name},#{specialObj.specialNo},#{gradeObj.gradeId},#{yearMonth},#{areaInfo},#{companyName},#{hangye},#{positionName},#{companyType},#{conectInfo},#{shouru})
+	</insert>
+
+	<!-- 按照查询条件分页查询就业学生记录 -->
+	<select id="queryGetJobStudent" resultMap="getJobStudentMap" >
+		select t_getJobStudent.* from t_getJobStudent,t_gradeInfo,t_specialInfo ${where} and t_getJobStudent.specialObj = t_specialInfo.specialNo and t_getJobStudent.gradeObj = t_gradeInfo.gradeId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="getJobStudentMap" type="getJobStudent">
+        <id property="id" column="id" />
+        <association property="specialObj" column="specialObj" select="com.chengxusheji.mapper.SpecialInfoMapper.getSpecialInfo" />
+        <association property="gradeObj" column="gradeObj" select="com.chengxusheji.mapper.GradeInfoMapper.getGradeInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有就业学生记录 -->
+	<select id="queryGetJobStudentList" resultMap="getJobStudentMap" >
+		select t_getJobStudent.* from t_getJobStudent,t_gradeInfo,t_specialInfo ${where} and t_getJobStudent.specialObj = t_specialInfo.specialNo and t_getJobStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+    <!-- 按照查询条件的就业学生记录数 -->
+	<select id="queryGetJobStudentCount" resultType="int">
+		select count(*) from t_getJobStudent,t_gradeInfo,t_specialInfo ${where} and t_getJobStudent.specialObj = t_specialInfo.specialNo and t_getJobStudent.gradeObj = t_gradeInfo.gradeId
+	</select>
+
+	<!-- 根据主键查询某个就业学生记录 -->
+	<select id="getGetJobStudent" parameterType="int" resultMap="getJobStudentMap">
+		select * from t_getJobStudent where t_getJobStudent.id = #{id}
+	</select>
+
+	<!-- 更新就业学生记录 -->
+	<update id="updateGetJobStudent" parameterType="getJobStudent">
+		update t_getJobStudent set studentNumber=#{studentNumber},name=#{name},specialObj=#{specialObj.specialNo},gradeObj=#{gradeObj.gradeId},yearMonth=#{yearMonth},areaInfo=#{areaInfo},companyName=#{companyName},hangye=#{hangye},positionName=#{positionName},companyType=#{companyType},conectInfo=#{conectInfo},shouru=#{shouru} where id = #{id}
+	</update>
+
+	<!-- 删除就业学生记录 -->
+	<delete id="deleteGetJobStudent" parameterType="int">
+		delete from t_getJobStudent where id=#{id}
+	</delete>
+
+</mapper>
